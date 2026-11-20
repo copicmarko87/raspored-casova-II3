@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="sr-Cyrl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Одељење II<sub>3</sub></title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      color: #263238;
+      overflow-x: hidden;
+    }
+
+    body {
+      position: relative;
+      background: linear-gradient(180deg, #6ec6ff 0%, #bfe9ff 58%, #e8f7ff 76%, #7ed957 76%, #57b838 100%);
+      padding: 18px 14px 125px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* Sareni decji pejzaz u pozadini (CSS + SVG) */
+    .scenery {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .sun {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff59d, #ffd54f 65%, #fbc02d);
+      box-shadow: 0 0 24px rgba(255, 213, 79, 0.85);
+      animation: sunPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes sunPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .cloud {
+      position: fixed;
+      background: #ffffff;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(25, 118, 210, 0.08);
+      opacity: 0.95;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: "";
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    .cloud-1 {
+      width: 92px;
+      height: 30px;
+      top: 34px;
+      left: 16px;
+      animation: drift 26s linear infinite;
+    }
+    .cloud-1::before {
+      width: 44px;
+      height: 44px;
+      top: -20px;
+      left: 14px;
+    }
+    .cloud-1::after {
+      width: 34px;
+      height: 34px;
+      top: -14px;
+      right: 14px;
+    }
+
+    .cloud-2 {
+      width: 76px;
+      height: 24px;
+      top: 86px;
+      right: 26%;
+      opacity: 0.85;
+      animation: drift 34s linear infinite reverse;
+    }
+    .cloud-2::before {
+      width: 36px;
+      height: 36px;
+      top: -16px;
+      left: 12px;
+    }
+    .cloud-2::after {
+      width: 28px;
+      height: 28px;
+      top: -11px;
+      right: 10px;
+    }
+
+    @keyframes drift {
+      0% { transform: translateX(-18px); }
+      50% { transform: translateX(18px); }
+      100% { transform: translateX(-18px); }
+    }
+
+    .landscape-svg {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 155px;
+      display: block;
+    }
+
+    /* Glavni mobilni kontejner */
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bele kartice */
+    .white-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 20px 16px;
+      box-shadow: 0 10px 26px rgba(24, 78, 119, 0.16);
+      border: 3px solid #ffffff;
+    }
+
+    .hero-title {
+      text-align: center;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #1b4f72;
+      margin-bottom: 6px;
+    }
+
+    .hero-sub {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #546e7a;
+      margin-bottom: 18px;
+    }
+
+    /* Dugmad na pocetnoj */
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      background: #ffffff;
+      border: 3px solid #4fc3f7;
+      border-radius: 20px;
+      padding: 18px 16px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #154360;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 0 #81d4fa, 0 10px 18px rgba(0, 0, 0, 0.1);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .menu-btn.secondary {
+      border-color: #ffb74d;
+      box-shadow: 0 6px 0 #ffe082, 0 10px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #81d4fa, 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-btn.secondary:active {
+      box-shadow: 0 2px 0 #ffe082, 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-badge {
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    /* Zaglavlje unutrasnjih ekrana + dugme Nazad */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .back-btn {
+      background: #ffffff;
+      color: #1b4f72;
+      border: 2.5px solid #29b6f6;
+      border-radius: 14px;
+      padding: 9px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b3e5fc;
+      white-space: nowrap;
+    }
+
+    .back-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #b3e5fc;
+    }
+
+    .screen-title {
+      flex: 1;
+      text-align: right;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 6px rgba(13, 71, 161, 0.45);
+    }
+
+    /* Selektori dana i smene */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 14px;
+      justify-content: center;
+    }
+
+    .pill {
+      background: #f4f8fb;
+      color: #37474f;
+      border: 2px solid #cfd8dc;
+      border-radius: 12px;
+      padding: 8px 11px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #29b6f6;
+      color: #ffffff;
+      border-color: #0288d1;
+    }
+
+    .shift-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .shift-btn {
+      background: #f4f8fb;
+      color: #37474f;
+      border: 2px solid #cfd8dc;
+      border-radius: 14px;
+      padding: 10px 8px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .shift-btn.active {
+      background: #ffa726;
+      color: #ffffff;
+      border-color: #ef6c00;
+    }
+
+    /* Liste casova */
+    .lesson-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lesson-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 2px solid #e1f5fe;
+      border-radius: 14px;
+      padding: 11px 13px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .lesson-num {
+      font-weight: 800;
+      color: #0277bd;
+      min-width: 74px;
+      font-size: 0.98rem;
+    }
+
+    .lesson-main {
+      flex: 1;
+      font-weight: 700;
+      font-size: 1.03rem;
+      color: #263238;
+      text-align: left;
+      padding-left: 6px;
+    }
+
+    .lesson-time {
+      font-weight: 800;
+      font-size: 0.96rem;
+      color: #1b5e20;
+      background: #e8f5e9;
+      padding: 4px 9px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #607d8b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sareni decji pejzaz: nebo, sunce, oblaci, kucice, drvece, zbunovi, trava -->
+  <div class="scenery" aria-hidden="true">
+    <div class="sun"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+
+    <svg class="landscape-svg" viewBox="0 0 440 155" preserveAspectRatio="none">
+      <!-- Brdasca u pozadini -->
+      <path d="M0,70 Q110,25 225,68 T440,62 L440,155 L0,155 Z" fill="#6fd14b" />
+      <path d="M0,92 Q140,58 290,90 T440,84 L440,155 L0,155 Z" fill="#52bd32" />
+
+      <!-- Leva kucica -->
+      <g transform="translate(24, 46)">
+        <rect x="6" y="24" width="44" height="34" rx="4" fill="#fff8e1" stroke="#5d4037" stroke-width="2.5" />
+        <polygon points="0,26 28,4 56,26" fill="#ef5350" stroke="#5d4037" stroke-width="2.5" stroke-linejoin="round" />
+        <rect x="22" y="36" width="12" height="22" rx="2" fill="#8d6e63" stroke="#5d4037" stroke-width="2" />
+        <rect x="11" y="31" width="8" height="8" rx="1.5" fill="#81d4fa" stroke="#5d4037" stroke-width="1.8" />
+        <rect x="37" y="31" width="8" height="8" rx="1.5" fill="#81d4fa" stroke="#5d4037" stroke-width="1.8" />
+      </g>
+
+      <!-- Desna kucica -->
+      <g transform="translate(358, 52)">
+        <rect x="5" y="20" width="40" height="30" rx="4" fill="#fffde7" stroke="#5d4037" stroke-width="2.5" />
+        <polygon points="0,22 25,3 50,22" fill="#ab47bc" stroke="#5d4037" stroke-width="2.5" stroke-linejoin="round" />
+        <rect x="20" y="31" width="10" height="19" rx="2" fill="#8d6e63" stroke="#5d4037" stroke-width="2" />
+        <rect x="10" y="27" width="7" height="7" rx="1.5" fill="#81d4fa" stroke="#5d4037" stroke-width="1.8" />
+      </g>
+
+      <!-- Drvece -->
+      <g transform="translate(96, 48)">
+        <rect x="11" y="28" width="8" height="24" rx="2" fill="#795548" />
+        <circle cx="15" cy="20" r="16" fill="#2e7d32" />
+        <circle cx="7" cy="24" r="11" fill="#388e3c" />
+        <circle cx="23" cy="24" r="11" fill="#43a047" />
+      </g>
+
+      <g transform="translate(310, 44)">
+        <rect x="12" y="30" width="9" height="26" rx="2" fill="#795548" />
+        <circle cx="16" cy="20" r="18" fill="#2e7d32" />
+        <circle cx="7" cy="25" r="12" fill="#388e3c" />
+        <circle cx="25" cy="25" r="12" fill="#43a047" />
+      </g>
+
+      <!-- Zbunovi -->
+      <g fill="#2e7d32">
+        <circle cx="156" cy="112" r="14" />
+        <circle cx="170" cy="115" r="12" />
+        <circle cx="268" cy="113" r="14" />
+        <circle cx="282" cy="116" r="11" />
+      </g>
+
+      <!-- Trava u prvom planu -->
+      <rect x="0" y="122" width="440" height="33" fill="#43a047" />
+      <g stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" fill="none">
+        <path d="M14,126 L10,115 M18,126 L20,114 M22,126 L26,117" />
+        <path d="M132,127 L128,116 M136,127 L138,115 M140,127 L144,118" />
+        <path d="M218,126 L214,115 M222,126 L224,114 M226,126 L230,117" />
+        <path d="M342,127 L338,116 M346,127 L348,115 M350,127 L354,118" />
+        <path d="M412,126 L408,115 M416,126 L418,114 M420,126 L424,117" />
+      </g>
+    </svg>
+  </div>
+
+  <main class="app">
+    <!-- POCETNI EKRAN -->
+    <section id="screen-home" class="screen active">
+      <div class="white-card" style="margin-bottom: 16px;">
+        <h1 class="hero-title">Одељење II<sub>3</sub></h1>
+        <p class="hero-sub">Изабери шта желиш да погледаш</p>
+      </div>
+
+      <div class="menu-buttons">
+        <button type="button" class="menu-btn" onclick="openScreen('screen-schedule')">
+          <span>Распоред часова</span>
+          <span class="btn-badge">📘</span>
+        </button>
+
+        <button type="button" class="menu-btn secondary" onclick="openScreen('screen-duration')">
+          <span>Кад звони?</span>
+          <span class="btn-badge">⏰</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- EKRAN: RASPORED CASOVA -->
+    <section id="screen-schedule" class="screen">
+      <div class="top-bar">
+        <button type="button" class="back-btn" onclick="goHome()">← Назад</button>
+        <h2 class="screen-title">Распоред часова</h2>
+      </div>
+
+      <div class="white-card">
+        <div id="day-pills" class="pills"></div>
+        <div id="schedule-list" class="lesson-list"></div>
+        <p class="note">Понедељак – Петак (1. до 5. час)</p>
+      </div>
+    </section>
+
+    <!-- EKRAN: KOLIKO TRAJU CASOVI -->
+    <section id="screen-duration" class="screen">
+      <div class="top-bar">
+        <button type="button" class="back-btn" onclick="goHome()">← Назад</button>
+        <h2 class="screen-title">Кад звони?</h2>
+      </div>
+
+      <div class="white-card">
+        <div class="shift-toggle">
+          <button type="button" id="btn-prepodne" class="shift-btn active" onclick="setShift('prepodne')">
+            Преподне
+          </button>
+          <button type="button" id="btn-popodne" class="shift-btn" onclick="setShift('popodne')">
+            Поподне
+          </button>
+        </div>
+
+        <div id="duration-list" class="lesson-list"></div>
+        <p class="note">Сваки час траје 45 минута</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Podaci sa slike "Распоред часова"
+    const scheduleByDay = {
+      "Понедељак": [
+        "Физичко",
+        "Српски",
+        "Математика",
+        "Енглески",
+        "Верска"
+      ],
+      "Уторак": [
+        "Математика",
+        "Српски",
+        "Свет око нас",
+        "Физичко",
+        "Допунска"
+      ],
+      "Среда": [
+        "Српски",
+        "Математика",
+        "Енглески",
+        "Дигитални",
+        "Час"
+      ],
+      "Четвртак": [
+        "Математика",
+        "Српски",
+        "Свет око нас",
+        "Музичко",
+        "Физичко"
+      ],
+      "Петак": [
+        "Српски",
+        "Математика",
+        "Ликовно",
+        "Ликовно",
+        "Секција"
+      ]
+    };
+
+    // Podaci sa slike satnice: преподне и поподне (1. до 6. час)
+    const timesByShift = {
+      prepodne: [
+        { label: "1. час", time: "07:30 – 08:15" },
+        { label: "2. час", time: "08:30 – 09:15" },
+        { label: "3. час", time: "09:30 – 10:15" },
+        { label: "4. час", time: "10:20 – 11:05" },
+        { label: "5. час", time: "11:10 – 11:55" },
+        { label: "6. час", time: "12:00 – 12:45" }
+      ],
+      popodne: [
+        { label: "1. час", time: "13:30 – 14:15" },
+        { label: "2. час", time: "14:30 – 15:15" },
+        { label: "3. час", time: "15:30 – 16:15" },
+        { label: "4. час", time: "16:20 – 17:05" },
+        { label: "5. час", time: "17:10 – 17:55" },
+        { label: "6. час", time: "18:00 – 18:45" }
+      ]
+    };
+
+    let currentDay = "Понедељак";
+    let currentShift = "prepodne";
+
+    function openScreen(screenId) {
+      document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+      document.getElementById(screenId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goHome() {
+      openScreen("screen-home");
+    }
+
+    function renderDayPills() {
+      const container = document.getElementById("day-pills");
+      container.innerHTML = "";
+
+      Object.keys(scheduleByDay).forEach((day) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pill" + (day === currentDay ? " active" : "");
+        btn.textContent = day;
+        btn.onclick = () => {
+          currentDay = day;
+          renderDayPills();
+          renderSchedule();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderSchedule() {
+      const list = document.getElementById("schedule-list");
+      const subjects = scheduleByDay[currentDay] || [];
+      list.innerHTML = "";
+
+      subjects.forEach((subject, idx) => {
+        const row = document.createElement("div");
+        row.className = "lesson-row";
+        row.innerHTML = `
+          <span class="lesson-num">${idx + 1}. час</span>
+          <span class="lesson-main">${subject}</span>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function setShift(shift) {
+      currentShift = shift;
+      document.getElementById("btn-prepodne").classList.toggle("active", shift === "prepodne");
+      document.getElementById("btn-popodne").classList.toggle("active", shift === "popodne");
+      renderDuration();
+    }
+
+    function renderDuration() {
+      const list = document.getElementById("duration-list");
+      const items = timesByShift[currentShift] || [];
+      list.innerHTML = "";
+
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "lesson-row";
+        row.innerHTML = `
+          <span class="lesson-num">${item.label}</span>
+          <span class="lesson-time">${item.time}</span>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    // Inicijalizacija
+    renderDayPills();
+    renderSchedule();
+    renderDuration();
+  </script>
+</body>
+</html>
