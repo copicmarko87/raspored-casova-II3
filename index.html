@@ -449,7 +449,7 @@
       <div class="white-card">
         <div id="day-pills" class="pills"></div>
         <div id="schedule-list" class="lesson-list"></div>
-        <p class="note">Понедељак – Петак (1. до 5. час)</p>
+        <p class="note">Дан се бира аутоматски при отварању. Викендом се приказује понедељак. Дан можеш променити ручно.</p>
       </div>
     </section>
 
@@ -536,10 +536,24 @@
       ]
     };
 
-    let currentDay = "Понедељак";
+    const weekdays = ["Недеља", "Понедељак", "Уторак", "Среда", "Четвртак", "Петак", "Субота"];
+
+    function getDayForSchedule() {
+      const today = new Date().getDay();
+      // Vikendom prikazujemo ponedeljak, kao sledeci skolski dan.
+      return (today === 0 || today === 6) ? "Понедељак" : weekdays[today];
+    }
+
+    let currentDay = getDayForSchedule();
     let currentShift = "prepodne";
 
     function openScreen(screenId) {
+      if (screenId === "screen-schedule") {
+        // Svaki put pri otvaranju automatski izaberi danasnji dan.
+        currentDay = getDayForSchedule();
+        renderDayPills();
+        renderSchedule();
+      }
       document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
       document.getElementById(screenId).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
